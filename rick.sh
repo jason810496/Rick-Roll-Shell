@@ -13,35 +13,63 @@
 # ------------------------------------------------------------------
 argcnt=$#
 status="error" #error | key | file
-ERROR=500
-keycnt=0
-filecnt=0
-total=0
-type=""
-rickFile="rick.sh"
 
 
-keyList=()
-fileList=()
-finalList=()
+rickFile="rickroll.sh"
+dotFolderPath="~/.vim"
+shellType="bash"
+configPath="~/.bashrc"
 
-usage() {
-    echo "Setup Rick Roll Shell in your friend's Terminal in a second!"
+
+
+# --- Color Variables --------------------------------------------
+RED='\033[0;31m'
+BIWhite='\033[1;97m' 
+IGreen='\033[0;92m'
+IRed='\033[0;91m'
+IWhite='\033[0;97m'
+BICyan='\033[1;96m'  
+NC='\033[0m' # No Color
+
+Usage() {
+    echo -e "Setup "$BICyan"Rick Roll Shell "$NC"in your friend's Terminal in a second!"
     echo
-    echo "Syntax: rick.sh [option...]"
-    echo "options:"
-    echo "  -h, --help     display this help and exit"
-    echo "  -h, --help     display this help and exit"
-    echo "uninstall:"
+    echo -e ""$BIWhite"Syntax:$NC rick.sh [options...]"
     echo ""
+    echo -e ""$BIWhite"Options:$NC"
+    echo "  -h, --help     display this help and exit"
+    echo -e "  -s, --shell    select shell type $IWhite{bash,zsh,csh,ksh,tcsh,fish}$NC"
+    echo -e "  -f, --folder   select dot folder to hide rickroll.sh (defult: $IGreen~/.vim$NC folder)"
+    echo "  -c, --config   select shell configuration file"
+    echo ""
+    echo -e ""$BIWhite"Example:$NC"
+    echo ""
+    echo -e "./rick.sh $IWhite<enter>$NC # interative mode"
+    echo -e "./rick.sh -s bash -f $IGreen~/.vim$NC -c $IWhite~/.bashrc$NC # setup with options"
+    echo -e "./rick.sh --shell bash --folder $IGreen~/project/.vscode$NC --config $IWhite~/.bashrc$NC # setup with long options"
+    echo -e "./rick.sh -s bash -f $IGreen~/.npm$NC # use defult bash configuration file ( $IWhite~/.bashrc$NC)"
 }
 
 Setup(){
-    ehco "setup"
+    echo -e "Copy "$IRed"rickroll.sh$NC to "$IGreen"$dotFolderPath"$NC" folder"
+    cp "$(pwd)/$rickFile" "$dotFolderPath/$rickFile"
+    # echo "rickFilePath: $dotFolderPath/$rickFile"
+    echo ""
+    echo -e "Update "$IWhite"$configPath"$NC" : adding \""$BIWhite"$shellType $dotFolderPath/$rickFile"$NC"\" to the beginning of file"
+    echo -e "$shellType $dotFolderPath/$rickFile\n$(cat $configPath)" > "$configPath"
+    echo ""
 }
 
-DotFolder(){
+Setup
+
+CreateDotFolder(){
+    echo ""
+}
+
+SelectDotFolder(){
     dotFolderPath="~/.rick"
+
+    echo ""
     
     echo -e -n "please enter any /path/to/.folder\n"
     while read -r dotVimPath; do
@@ -59,7 +87,7 @@ DotFolder(){
     done
 }
 
-Vim(){
+DotVim(){
     dotVimPath="~/.vim"
     if test -d "$dotVimPath"; then
         echo "defult .vim found"
@@ -81,11 +109,11 @@ Vim(){
         done
     fi
 
-    echo "Move rick.sh to $dotVimPath folder"
-    mv "$(pwd)/$rickFile" "$dotVimPath"
+    dotFolderPath=$dotVimPath
 }
 
 Bash(){
+    shellType="bash"
     bashrcPath="~/.bashrc"
     if test -f "$bashrcPath"; then
         echo "defult .bashrc found"
@@ -106,9 +134,13 @@ Bash(){
             let "notFoundCnt+=1"
         done
     fi
+
+    configPath=$bashrcPath
+    Setup
 }
 
 Zsh() {
+    shellType="zsh"
     zshrcPath="~/.zshrc"
     if test -f "$zshrcPath"; then
         echo "defult .zshrc found"
@@ -129,21 +161,27 @@ Zsh() {
             let "notFoundCnt+=1"
         done
     fi
+
+    Setup
 }
 
 Csh() {
+    shellType="csh"
     echo "Csh"
 }
 
 Ksh(){
+    shellType="ksh"
     echo "Ksh"
 }
 
 Tcsh() {
+    shellType="tch"
     echo "Tcsh"
 }
 
 Fish(){
+    shellType="fish"
     echo "Fish"
 }
 #clean process directory
@@ -151,23 +189,24 @@ Fish(){
 # mkdir -p $dir
 
 
-# --- Option processing --------------------------------------------
+# --- Interative Mode --------------------------------------------
 if [ $argcnt -eq 0 ]
 then
-    usage
+    Usage
     exit 0
 fi
 
 # --- Testing processing --------------------------------------------
 
-Bash
 Vim
+Bash
 
+# --- Options Mode --------------------------------------------
 optidx=0
 while test $# -gt 0; do
     case "$1" in
         -h | --help )
-            usage
+            Usage
             exit 0
         ;;
         --sha256)
@@ -197,7 +236,7 @@ while test $# -gt 0; do
         ;;
         --*)
             >&2 echo "Error: Invalid arguments."
-            usage
+            Usage
             exit $ERROR
         ;;
         *)
