@@ -60,10 +60,16 @@ Setup(){
     echo ""
 }
 
-Setup
-
 CreateDotFolder(){
-    echo ""
+    dotFolderPath="~/.rick"
+
+    echo "Enter path to dot folder("$IGreen"$dotFolderPath"$NC")"
+    read pth
+    if test -n "$pth";then
+        dotFolderPath=$pth
+    fi
+
+    mkdir "$dotFolderPath"
 }
 
 SelectDotFolder(){
@@ -71,18 +77,18 @@ SelectDotFolder(){
 
     echo ""
     
-    echo -e -n "please enter any /path/to/.folder\n"
+    echo -e -n "please enter any "$IGreen"/path/to/.folder"$NC"\n"
     while read -r dotVimPath; do
         echo "$dotVimPath"
         if test -d "$dotVimPath"; then
-            echo "$dotVimPath found"
+            echo -e ""$IGreen"$dotVimPath"$NC" found"
             break
         fi
         if [[ $notFoundCnt -eq 4 ]];then
             echo "Please enter correct file path to setup Rick Roll Shell."
             exit 404
         fi
-        echo -e -n "$dotVimPath not found, please correct enter /path/to/.vim\n"
+        echo -e -n "$dotVimPath not found, please correct enter "$IGreen"/path/to/.folder"$NC"\n"
         let "notFoundCnt+=1"
     done
 }
@@ -90,21 +96,20 @@ SelectDotFolder(){
 DotVim(){
     dotVimPath="~/.vim"
     if test -d "$dotVimPath"; then
-        echo "defult .vim found"
+        echo "defult "$IGreen".vim"$NC" found"
     else
-        echo -e -n "defult .vim folder not found, please enter /path/to/.vim\n"
+        echo -e -n "defult "$IGreen".vim"$NC" folder not found, please enter "$IGreen"/path/to/.vim"$NC": "
         notFoundCnt=0
         while read -r dotVimPath; do
-            echo "$dotVimPath"
             if test -d "$dotVimPath"; then
-                echo "$dotVimPath found"
+                echo -e ""$IGreen"$dotVimPath"$NC" found"
                 break
             fi
             if [[ $notFoundCnt -eq 4 ]];then
                 echo "Please enter correct file path to setup Rick Roll Shell."
                 exit 404
             fi
-            echo -e -n "$dotVimPath not found, please correct enter /path/to/.vim\n"
+            echo -e -n "$dotVimPath not found, please correct enter "$IGreen"/path/to/.vim"$NC": "
             let "notFoundCnt+=1"
         done
     fi
@@ -112,40 +117,63 @@ DotVim(){
     dotFolderPath=$dotVimPath
 }
 
+DotFolder(){
+    echo -e -n ""$IWhite"[1]"$NC"Select $IGreen~/.vim$NC folder. "$IWhite"[2]"$NC"Create dot folder. "$IWhite"[3]"$NC"Select dot folder. "$IWhite"[q]"$NC"Quit: "
+    read opt
+
+    case "$opt" in
+        1 )
+            DotVim
+        ;;
+        2 )
+            CreateDotFolder
+        ;;
+        3 )
+            SelectDotFolder
+        ;;
+        * )
+            exit 0
+        ;;
+    esac
+}
+
+GenericShell(){
+    echo "in generic" $1 $2 $3
+}
+
 Bash(){
     shellType="bash"
     bashrcPath="~/.bashrc"
     if test -f "$bashrcPath"; then
-        echo "defult .bashrc found"
+        echo "defult "$IWhite".bashrc"$NC" found"
     else
-        echo -e -n "defult .bashrc not found, please enter /path/to/.bashrc\n"
+        echo -e -n "defult "$IWhite".bashrc"$NC" not found, please enter "$IWhite"/path/to/.bashrc"$NC": "
         notFoundCnt=0
         while read -r bashrcPath; do
-            echo "$bashrcPath"
             if test -f "$bashrcPath"; then
-                echo "$bashrcPath found"
+                echo -e ""$IWhite"$bashrcPath"$NC" found"
                 break
             fi
             if [[ $notFoundCnt -eq 4 ]];then
                 echo "Please enter correct file path to setup Rick Roll Shell."
                 exit 404
             fi
-            echo -e -n "$bashrcPath not found, please correct enter /path/to/.bashrc\n"
+            echo -e -n ""$IWhite"$bashrcPath"$NC" not found, please correct enter "$IWhite"/path/to/.bashrc"$NC": "
             let "notFoundCnt+=1"
         done
     fi
 
+    GenericShell "bash" "~/.bashrc" "bashrc"
     configPath=$bashrcPath
-    Setup
 }
 
 Zsh() {
     shellType="zsh"
     zshrcPath="~/.zshrc"
     if test -f "$zshrcPath"; then
-        echo "defult .zshrc found"
+        echo "defult "$IWhite".zshrc"$NC" found"
     else
-        echo -e -n "defult .zshrc not found, please enter /path/to/.zshrc\n"
+        echo -e -n "defult "$IWhite".zshrc$NC"" not found, please enter "$IWhite"/path/to/.zshrc"$NC": "
         notFoundCnt=0
         while read -r zshrcPath; do
             echo "$zshrcPath"
@@ -157,12 +185,12 @@ Zsh() {
                 echo "Please enter correct file path to setup Rick Roll Shell."
                 exit 404
             fi
-            echo -e -n "$zshrcPath not found, please correct enter /path/to/.zshrc\n"
+            echo -e -n ""$IWhite"$zshrcPath"$NC" not found, please correct enter "$IWhite"/path/to/.zshrc"$NC": "
             let "notFoundCnt+=1"
         done
     fi
 
-    Setup
+    configPath=$bashrcPath
 }
 
 Csh() {
@@ -184,6 +212,37 @@ Fish(){
     shellType="fish"
     echo "Fish"
 }
+
+Shell(){
+    echo -e -n "Select your "$IWhite"Shell type"$NC" :\n"
+    echo -e -n ""$IWhite"[1]"$NC"bash "$IWhite"[2]"$NC"zsh "$IWhite"$IWhite"[3]"$NC"csh ""$IWhite"[4]"$NC"ksh "$IWhite"[5]"$NC"tcsh ""$IWhite"[6]"$NC"fish $IWhite"[q]"$NC"Quit: "
+    read opt
+    echo $opt
+
+    case "$opt" in
+        1 )
+            Bash
+        ;;
+        2 )
+            Zsh
+        ;;
+        3 )
+            Csh
+        ;;
+        4 )
+            Ksh
+        ;;
+        5 )
+            Tcsh
+        ;;
+        6 )
+            Fish
+        ;;
+        * )
+            exit 0
+        ;;
+    esac
+}
 #clean process directory
 # rm -r $dir
 # mkdir -p $dir
@@ -192,14 +251,17 @@ Fish(){
 # --- Interative Mode --------------------------------------------
 if [ $argcnt -eq 0 ]
 then
-    Usage
+    echo -e "Setup "$BICyan"Rick Roll Shell "$NC"in your friend's Terminal in a second!"
+    Shell
+    DotFolder
+    Setup
     exit 0
 fi
 
 # --- Testing processing --------------------------------------------
 
-Vim
-Bash
+# Vim
+# Bash
 
 # --- Options Mode --------------------------------------------
 optidx=0
