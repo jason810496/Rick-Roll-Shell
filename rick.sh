@@ -11,16 +11,16 @@
 # Dependency:
 #     http://shflags.googlecode.com/svn/trunk/source/1.0/src/shflags
 # ------------------------------------------------------------------
-argcnt=$#
-status="error" #error | key | file
 
 
+# --- Global Variables --------------------------------------------
+# for input status
+status="error"
+# for setting
 rickFile="rickroll.sh"
 dotFolderPath="~/.vim"
 shellType="bash"
 configPath="~/.bashrc"
-
-
 
 # --- Color Variables --------------------------------------------
 RED='\033[0;31m'
@@ -31,6 +31,7 @@ IWhite='\033[0;97m'
 BICyan='\033[1;96m'  
 NC='\033[0m' # No Color
 
+# Usage funciton
 Usage() {
     echo -e "Setup "$BICyan"Rick Roll Shell "$NC"in your friend's Terminal in a second!"
     echo
@@ -41,11 +42,17 @@ Usage() {
     echo -e "  -s, --shell    select shell type $IWhite{bash,zsh,csh,ksh,tcsh,fish}$NC"
     echo -e "  -f, --folder   select dot folder to hide rickroll.sh (defult: $IGreen~/.vim$NC folder)"
     echo "  -c, --config   select shell configuration file"
+    echo -e "  -r, --roll     run $IRed"rickroll.sh$NC""
+    echo ""
+    echo -e ""$BIWhite"Description:$NC"
+    echo ""
+    echo -e "Add \""$BIWhite"\$SHELL /path/to/.FOLDER/$rickFile"$NC"\" to the beginning of shell configuration file"
+    echo -e ""$IRed"rickroll.sh$NC will be copy to "$IGreen"/path/to/.FOLDER"$NC" folder"
     echo ""
     echo -e ""$BIWhite"Example:$NC"
     echo ""
     echo -e "./rick.sh $IWhite<enter>$NC # interative mode"
-    echo -e "./rick.sh -s bash -f $IGreen~/.vim$NC -c $IWhite~/.bashrc$NC # setup with options"
+    echo -e "./rick.sh -s zsh -f $IGreen~/.vim$NC -c $IWhite~/.zshrc$NC # setup with options"
     echo -e "./rick.sh --shell bash --folder $IGreen~/project/.vscode$NC --config $IWhite~/.bashrc$NC # setup with long options"
     echo -e "./rick.sh -s bash -f $IGreen~/.npm$NC # use defult bash configuration file ( $IWhite~/.bashrc$NC)"
 }
@@ -138,79 +145,53 @@ DotFolder(){
 }
 
 GenericShell(){
-    echo "in generic" $1 $2 $3
+    shellType="$1"
+    configPath="$2"
+    configName="$3"
+
+    if test -f "$configPath"; then
+        echo "defult "$IWhite".$configName"$NC" found"
+    else
+        echo -e -n "defult "$IWhite".$configName"$NC" not found, please enter "$IWhite"/path/to/.$configName"$NC": "
+        notFoundCnt=0
+        while read -r configPath; do
+            if test -f "$configPath"; then
+                echo -e ""$IWhite"$configPath"$NC" found"
+                break
+            fi
+            if [[ $notFoundCnt -eq 4 ]];then
+                echo "Please enter correct file path to setup Rick Roll Shell."
+                exit 404
+            fi
+            echo -e -n ""$IWhite"$configPath"$NC" not found, please correct enter "$IWhite"/path/to/.$configName"$NC": "
+            let "notFoundCnt+=1"
+        done
+    fi
 }
 
 Bash(){
-    shellType="bash"
-    bashrcPath="~/.bashrc"
-    if test -f "$bashrcPath"; then
-        echo "defult "$IWhite".bashrc"$NC" found"
-    else
-        echo -e -n "defult "$IWhite".bashrc"$NC" not found, please enter "$IWhite"/path/to/.bashrc"$NC": "
-        notFoundCnt=0
-        while read -r bashrcPath; do
-            if test -f "$bashrcPath"; then
-                echo -e ""$IWhite"$bashrcPath"$NC" found"
-                break
-            fi
-            if [[ $notFoundCnt -eq 4 ]];then
-                echo "Please enter correct file path to setup Rick Roll Shell."
-                exit 404
-            fi
-            echo -e -n ""$IWhite"$bashrcPath"$NC" not found, please correct enter "$IWhite"/path/to/.bashrc"$NC": "
-            let "notFoundCnt+=1"
-        done
-    fi
-
     GenericShell "bash" "~/.bashrc" "bashrc"
-    configPath=$bashrcPath
 }
 
 Zsh() {
-    shellType="zsh"
-    zshrcPath="~/.zshrc"
-    if test -f "$zshrcPath"; then
-        echo "defult "$IWhite".zshrc"$NC" found"
-    else
-        echo -e -n "defult "$IWhite".zshrc$NC"" not found, please enter "$IWhite"/path/to/.zshrc"$NC": "
-        notFoundCnt=0
-        while read -r zshrcPath; do
-            echo "$zshrcPath"
-            if test -f "$zshrcPath"; then
-                echo "$zshrcPath found"
-                break
-            fi
-            if [[ $notFoundCnt -eq 4 ]];then
-                echo "Please enter correct file path to setup Rick Roll Shell."
-                exit 404
-            fi
-            echo -e -n ""$IWhite"$zshrcPath"$NC" not found, please correct enter "$IWhite"/path/to/.zshrc"$NC": "
-            let "notFoundCnt+=1"
-        done
-    fi
-
-    configPath=$bashrcPath
+    GenericShell "zsh" "~/.zshrc" "zshrc"
 }
 
 Csh() {
-    shellType="csh"
-    echo "Csh"
+    GenericShell "csh" "~/.cshrc" "cshrc"
 }
 
 Ksh(){
-    shellType="ksh"
-    echo "Ksh"
+    GenericShell "ksh" "~/.kshrc" "kshrc"
 }
 
 Tcsh() {
-    shellType="tch"
-    echo "Tcsh"
+    GenericShell "tcsh" "~/.tcshrc" "tcshrc"
 }
 
 Fish(){
-    shellType="fish"
-    echo "Fish"
+    GenericShell "fish" "~/.config/fish/config.fish" "config.fish"
+    
 }
 
 Shell(){
@@ -243,13 +224,10 @@ Shell(){
         ;;
     esac
 }
-#clean process directory
-# rm -r $dir
-# mkdir -p $dir
 
 
 # --- Interative Mode --------------------------------------------
-if [ $argcnt -eq 0 ]
+if [ $# -eq 0 ]
 then
     echo -e "Setup "$BICyan"Rick Roll Shell "$NC"in your friend's Terminal in a second!"
     Shell
@@ -258,71 +236,49 @@ then
     exit 0
 fi
 
-# --- Testing processing --------------------------------------------
-
-# Vim
-# Bash
 
 # --- Options Mode --------------------------------------------
-optidx=0
 while test $# -gt 0; do
     case "$1" in
         -h | --help )
             Usage
             exit 0
         ;;
-        --sha256)
-            # echo "sha256"
-            # mix hash error
-            if [ "$type" = "md5sum" ]
-            then
-                >&2 echo "Error: Only one type of hash function is allowed."
-                exit $ERROR
-            fi
-            status="key"
-            type="sha256sum"
+        -r | --roll )
+            ./rickroll.sh
+            exit 0
         ;;
-        --md5)
-            # echo "md5"
-            # mix hash error
-            if [ "$type" = "sha256sum" ]
-            then
-                >&2 echo "Error: Only one typeof hash function is allowed."
-                exit $ERROR
-            fi
-            status="key"
-            type="md5sum"
+        -s | --shell )
+            status="shell"
         ;;
-        -i)
-            status="file"
+        -f | --folder )
+            status="folder"
         ;;
-        --*)
-            >&2 echo "Error: Invalid arguments."
+        -c | --config )
+            status="config"
+        ;;
+        -* | --*)
+            >&2 echo -e ""$RED"Error:"$NC" Invalid arguments.\n"
             Usage
             exit $ERROR
         ;;
         *)
-            if test -z "$1"
-            then
-                :
-            else
-                if [ $status = "key" ]
-                then
-                    # echo "$1" > "$dir/key${keycnt}"
-                    keyList+=("$1")
-                    let "keycnt+=1"
-                elif [ $status = "file" ]
-                then
-                    # echo "$1" > "$dir/file${filecnt}"
-                    fileList+=("$1")
-                    let "filecnt+=1"
-                fi
-            fi
+            case "$status" in
+                shell )
+                    shellType="$1"
+                ;;
+                folder )
+                    dotFolderPath="$1"
+                ;;
+                config )
+                    configPath="$1"
+                ;;
+            esac
         ;;
     esac
 	shift
 done
 
+Setup
 
-# -- Body ---------------------------------------------------------
 
