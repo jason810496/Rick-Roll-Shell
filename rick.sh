@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # ------------------------------------------------------------------
 # [Author] Title
@@ -14,6 +14,7 @@
 
 
 # --- Global Variables --------------------------------------------
+
 # for input status
 status="error"
 # for setting
@@ -58,25 +59,32 @@ Usage() {
 }
 
 Setup(){
+    echo -e "\nStart setup process ... "
+
     echo -e "Copy "$IRed"rickroll.sh$NC to "$IGreen"$dotFolderPath"$NC" folder"
-    cp "$(pwd)/$rickFile" "$dotFolderPath/$rickFile"
-    # echo "rickFilePath: $dotFolderPath/$rickFile"
-    echo ""
-    echo -e "Update "$IWhite"$configPath"$NC" : adding \""$BIWhite"$shellType $dotFolderPath/$rickFile"$NC"\" to the beginning of file"
-    echo -e "$shellType $dotFolderPath/$rickFile\n$(cat $configPath)" > "$configPath"
-    echo ""
+    eval "cp $(pwd)/$rickFile $dotFolderPath/$rickFile"
+
+    echo -e "Update "$IWhite"$configPath"$NC" : adding \""$BIWhite"$shellType $dotFolderPath/$rickFile"$NC"\" to the end of file"
+    eval "echo $shellType $dotFolderPath/$rickFile >> $configPath"
+    
+    echo -e "Finish setup !"
 }
 
 CreateDotFolder(){
-    dotFolderPath="~/.rick"
+    dotFolderPath=""
 
-    echo "Enter path to dot folder("$IGreen"$dotFolderPath"$NC")"
+    echo -e -n "Enter path to dot folder (defult: "$IGreen~/.rick$NC") "
     read pth
-    if test -n "$pth";then
+    if [ -d "$pth" ]; then
         dotFolderPath=$pth
+    else 
+        if [ -n "$pth" ]; then
+            dotFolderPath=$pth
+        else
+            dotFolderPath="~/.rick"
+        fi
+        eval "mkdir -p "$dotFolderPath""
     fi
-
-    mkdir "$dotFolderPath"
 }
 
 SelectDotFolder(){
@@ -84,26 +92,26 @@ SelectDotFolder(){
 
     echo ""
     
-    echo -e -n "please enter any "$IGreen"/path/to/.folder"$NC"\n"
-    while read -r dotVimPath; do
-        echo "$dotVimPath"
-        if test -d "$dotVimPath"; then
-            echo -e ""$IGreen"$dotVimPath"$NC" found"
+    echo -e -n "please enter any "$IGreen"/path/to/.folder"$NC" "
+    while read -r dotFolderPath; do
+        if test -d "$dotFolderPath"; then
+            echo -e ""$IGreen"$dotFolderPath"$NC" found"
             break
         fi
         if [[ $notFoundCnt -eq 4 ]];then
             echo "Please enter correct file path to setup Rick Roll Shell."
             exit 404
         fi
-        echo -e -n "$dotVimPath not found, please correct enter "$IGreen"/path/to/.folder"$NC"\n"
+        echo -e -n "$dotFolderPath not found, please correct enter "$IGreen"/path/to/.folder"$NC" "
         let "notFoundCnt+=1"
     done
 }
 
 DotVim(){
     dotVimPath="~/.vim"
-    if test -d "$dotVimPath"; then
-        echo "defult "$IGreen".vim"$NC" found"
+    if [ ! -d "$dotVimPath" ]
+    then
+        echo -e "defult "$IGreen".vim"$NC" found"
     else
         echo -e -n "defult "$IGreen".vim"$NC" folder not found, please enter "$IGreen"/path/to/.vim"$NC": "
         notFoundCnt=0
@@ -145,12 +153,13 @@ DotFolder(){
 }
 
 GenericShell(){
-    shellType="$1"
-    configPath="$2"
-    configName="$3"
+    shellType=$1
+    configPath=$2
+    configName=$3
 
-    if test -f "$configPath"; then
-        echo "defult "$IWhite".$configName"$NC" found"
+    if [ ! -f "$configPath" ]
+    then
+        echo -e "defult "$IWhite".$configName"$NC" found"
     else
         echo -e -n "defult "$IWhite".$configName"$NC" not found, please enter "$IWhite"/path/to/.$configName"$NC": "
         notFoundCnt=0
@@ -198,7 +207,6 @@ Shell(){
     echo -e -n "Select your "$IWhite"Shell type"$NC" :\n"
     echo -e -n ""$IWhite"[1]"$NC"bash "$IWhite"[2]"$NC"zsh "$IWhite"$IWhite"[3]"$NC"csh ""$IWhite"[4]"$NC"ksh "$IWhite"[5]"$NC"tcsh ""$IWhite"[6]"$NC"fish $IWhite"[q]"$NC"Quit: "
     read opt
-    echo $opt
 
     case "$opt" in
         1 )
@@ -229,8 +237,9 @@ Shell(){
 # --- Interative Mode --------------------------------------------
 if [ $# -eq 0 ]
 then
-    echo -e "Setup "$BICyan"Rick Roll Shell "$NC"in your friend's Terminal in a second!"
+    echo -e "Setup "$BICyan"Rick Roll Shell "$NC"in your friend's Terminal in a second!\n"
     Shell
+    echo ""
     DotFolder
     Setup
     exit 0
