@@ -64,9 +64,15 @@ Setup(){
     echo -e "Copy "$IRed"rickroll.sh$NC to "$IGreen"$dotFolderPath"$NC" folder"
     eval "cp $(pwd)/$rickFile $dotFolderPath/$rickFile"
 
-    echo -e "Update "$IWhite"$configPath"$NC" : adding \""$BIWhite"$shellType $dotFolderPath/$rickFile"$NC"\" to the end of file"
-    eval "echo $shellType $dotFolderPath/$rickFile >> $configPath"
+    echo -e "Update "$IWhite"$configPath"$NC" : adding \""$BIWhite"$shellType $dotFolderPath/$rickFile"$NC"\" to the beginning of file"
     
+    updateContent="$shellType $dotFolderPath/$rickFile"
+    tmpFile="tmp.tmp"
+    echo "$updateContent" >> "$tmpFile"
+    eval "cat $configPath >> $tmpFile"
+    eval "cp $tmpFile $configPath"
+    rm "$tmpFile"
+
     echo -e "Finish setup !"
 }
 
