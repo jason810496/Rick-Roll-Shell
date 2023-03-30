@@ -1,14 +1,14 @@
 # Rick Roll Shell
 
-![中文]()
+![English]()
 
-Set up **Rick Roll** for common shell in a second !
+三秒內常見的 Shell 中設定 **Rick Roll** !
 
-Your friend got Rickrolled when logging into the shell :-)
+當你朋友登入 Shell 時就會被 Rick Roll :-)
 
 ![Demo Gif](https://raw.githubusercontent.com/jason810496/Rick-Roll-Shell/Demo/demo.gif)
 
-## Usage
+## 如何使用
 ```
 Setup Rick Roll Shell in your friend's Terminal in a second!
 
