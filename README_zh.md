@@ -1,6 +1,6 @@
 # Rick Roll Shell
 
-![English]()
+[English](https://github.com/jason810496/Rick-Roll-Shell)
 
 三秒內常見的 Shell 中設定 **Rick Roll** !
 

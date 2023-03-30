@@ -1,6 +1,6 @@
 # Rick Roll Shell
 
-![中文]()
+[中文](https://github.com/jason810496/Rick-Roll-Shell/blob/master/README_zh.md)
 
 Set up **Rick Roll** for common shell in a second !
 
