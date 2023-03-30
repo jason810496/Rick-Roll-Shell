@@ -2,6 +2,8 @@
 
 Set up **Rick Roll Animation** for common shell in a second !
 
+![Demo Gif](https://raw.githubusercontent.com/jason810496/Rick-Roll-Shell/Demo/demo.gif)
+
 ## Usage
 ```
 Setup Rick Roll Shell in your friend's Terminal in a second!
