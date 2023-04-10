@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 
 # ------------------------------------------------------------------
-# [Author] Title
-#          Description
+# [JasonBigCow] RickRollShell
+#          Setup Rick Roll Shell in your friend's Terminal in a second!
 #
-#          This script uses shFlags -- Advanced command-line flag
-#          library for Unix shell scripts.
-#          http://code.google.com/p/shflags/
-#
-# Dependency:
-#     http://shflags.googlecode.com/svn/trunk/source/1.0/src/shflags
 # ------------------------------------------------------------------
 
 
